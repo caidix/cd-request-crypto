@@ -1,11 +1,32 @@
 import * as md5 from "md5";
-import { CryptoOptions } from "./types";
-import { deepClone, isArray, isObject } from "./utils";
+import { AxiosCryptoOptions } from "./types";
+import { isArray, isObject } from "./utils";
+import { sortByKey } from "./utils/sort";
+/**
+ * 对象排序
+ * @param {*} [param={}]
+ * @param {string[]} [whiteParams]
+ * @returns {Object}
+ */
+function sortParams(param: AnyRecord, whiteParams?: string[]): Object {
+  // 过滤需要忽略的key
+  if (whiteParams && whiteParams.length) {
+    param = Object.entries(param).reduce((prev, next) => {
+      const [key = "", val = ""] = next || [];
+      if (key && !whiteParams.includes(key)) {
+        prev[key] = val;
+      }
+      return prev;
+    }, {} as AnyRecord);
+  }
+
+  return sortByKey(param, { deep: true });
+}
 
 function formatParams(data: AnyRecord, whiteParams: string[]) {
   try {
-    return Object.keys(data)
-      .filter((key) => key && !whiteParams.includes(key))
+    const newParam: AnyRecord = sortParams(data, whiteParams);
+    return Object.keys(newParam)
       .map((key) => {
         let value = data[key];
         if (isArray(value) || isObject(value) || value === null) {
@@ -19,7 +40,7 @@ function formatParams(data: AnyRecord, whiteParams: string[]) {
   }
 }
 
-function encrypto(opt: CryptoOptions) {
+function encrypto(opt: AxiosCryptoOptions) {
   const { salt, options, whiteParams = [] } = opt;
 
   if (!salt || salt) {
@@ -29,7 +50,7 @@ function encrypto(opt: CryptoOptions) {
     throw TypeError("Crypto Error: whiteParams为数组类型");
   }
 
-  const data = deepClone(options);
+  const data = JSON.parse(JSON.stringify(options));
 
   if (!data.__timestamp__) {
     data.__timestamp__ = +new Date();

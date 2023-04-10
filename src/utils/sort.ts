@@ -1,7 +1,9 @@
+import { isBoolean, isFunction, isObject } from "./index";
+
 type Compare = (a: string, b: string) => number;
 interface SortOptions {
   deep: boolean;
-  compare: Compare;
+  compare?: Compare;
 }
 
 const _compare: Compare = (n, m) => {
@@ -24,8 +26,8 @@ export function sortByKey(data: AnyRecord, options: SortOptions) {
   }
 
   // 深度递归时存储历史地址 -- 防止循环引用造成死锁
-  const inputRecord: unknown[] = [];
-  const ouputRecord: unknown[] = [];
+  const inputRecord: AnyRecord[] = [];
+  const ouputRecord: AnyRecord[] = [];
 
   const sortByArray = (data: any[]) => {
     const recordIndex = inputRecord.indexOf(data);
@@ -52,7 +54,7 @@ export function sortByKey(data: AnyRecord, options: SortOptions) {
     return res;
   };
 
-  const sort = (data: AnyRecord) => {
+  const sort = (data: AnyRecord): AnyRecord => {
     const recordIndex = inputRecord.indexOf(data);
     if (recordIndex > -1) {
       return ouputRecord[recordIndex];
@@ -79,6 +81,8 @@ export function sortByKey(data: AnyRecord, options: SortOptions) {
         value,
       });
     });
+
+    return sortParams;
   };
 
   return sort(data);

@@ -1,10 +1,15 @@
 import axios from "axios";
 import encrypto from "./crypto";
-import { AxiosCryptoOptions, CryptoOptions } from "./types";
+import { AxiosCryptoOptions } from "./types";
 import { getURLParameters } from "./utils";
 
-function AxiosCrypto(opt: AxiosCryptoOptions) {
-  // 全局拦截
+/**
+ * axios 全局拦截
+ * @export
+ * @param {AxiosCryptoOptions} opt
+ * @return {*}
+ */
+export function AxiosCrypto(opt: AxiosCryptoOptions) {
   axios.interceptors.request.use(function (config: AnyRecord = {}) {
     const {
       headers = {},

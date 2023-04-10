@@ -1,11 +1,7 @@
-export interface CryptoOptions {
+export interface AxiosCryptoOptions {
   salt: string; // 盐值
   options: AnyRecord;
   whiteParams?: string[]; // 入参白名单
-}
-
-export interface AxiosCryptoOptions {
-  salt: string; // 盐值
 }
 
 export interface Request {
